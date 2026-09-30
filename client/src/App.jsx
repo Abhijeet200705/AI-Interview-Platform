@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import InterviewSelect from './pages/InterviewSelect';
+import InterviewRoom from './pages/InterviewRoom';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -15,6 +17,22 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/interview-select"
+        element={
+          <ProtectedRoute>
+            <InterviewSelect />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/interview/:type"
+        element={
+          <ProtectedRoute>
+            <InterviewRoom />
           </ProtectedRoute>
         }
       />
