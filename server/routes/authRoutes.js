@@ -9,7 +9,7 @@ const router = express.Router();
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, skills, experience, preferredJobRole } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Name, email and password are required' });
@@ -28,11 +28,29 @@ router.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email: normalizedEmail, password: hashedPassword });
+    const user = await User.create({
+      name,
+      email: normalizedEmail,
+      password: hashedPassword,
+      skills: skills || [],
+      experience: experience || '',
+      preferredJobRole: preferredJobRole || '',
+    });
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        skills: user.skills,
+        experience: user.experience,
+        preferredJobRole: user.preferredJobRole,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

@@ -8,6 +8,9 @@ function Dashboard() {
       <h2>Welcome, {user?.name}</h2>
       <p>Role: {user?.role}</p>
       <p>Email: {user?.email}</p>
+      <p>Preferred Job Role: {user?.preferredJobRole || 'Not set'}</p>
+      <p>Experience: {user?.experience || 'Not set'}</p>
+      <p>Skills: {user?.skills?.length ? user.skills.join(', ') : 'None added'}</p>
       <button onClick={logout}>Logout</button>
     </div>
   );
