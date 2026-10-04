@@ -107,4 +107,38 @@ router.post('/:interviewId/answer', protect, async (req, res) => {
   }
 });
 
+
+// Log an integrity violation (tab switch / fullscreen exit)
+router.post('/:interviewId/violation', protect, async (req, res) => {
+  try {
+    const { interviewId } = req.params;
+    const { type } = req.body;
+
+    const validViolationTypes = ['tab_switch', 'fullscreen_exit'];
+    if (!validViolationTypes.includes(type)) {
+      return res.status(400).json({ message: 'Invalid violation type' });
+    }
+
+    const interview = await Interview.findById(interviewId);
+    if (!interview) {
+      return res.status(404).json({ message: 'Interview not found' });
+    }
+    if (interview.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not your interview' });
+    }
+
+    interview.violations.push({ type });
+    await interview.save();
+
+    const violationCount = interview.violations.length;
+
+    res.json({
+      violationCount,
+      warning: violationCount >= 3 ? 'Multiple violations detected. Interview may be terminated.' : 'Violation recorded.',
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 module.exports = router;
